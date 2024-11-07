@@ -238,7 +238,7 @@ void RenderUI() {
         }
         ImGui::SetCursorPosX((windowSize.x - buttonSize.x) / 2);  // Center "Forgot Password" button
         if (ImGui::Button("Forgot Password", buttonSize)) {
-            currentScene = FORGOT_PASSWORD;
+            currentScene = FORGOT_PASSWORD; 
         }
         ImGui::SetCursorPosX((windowSize.x - buttonSize.x) / 2);  // Center "Back" button
         if (ImGui::Button("Back", buttonSize)) {
@@ -306,6 +306,7 @@ void RenderUI() {
                     User user(username, "");
                     Database(username).clearPasswords();
                     user.saveUserData(newMasterPassword);
+                    Database(username).setRecoveryStatus(username, false);
                     ShowStatusMessage("Password reset successfully.");
                     currentScene = MAIN_MENU;
                 } else {

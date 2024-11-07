@@ -5,6 +5,5 @@
 void accountRecovery(const std::string& username);
 std::string generateRecoveryCode(); // Function to generate recovery code
 bool sendRecoveryEmail(const std::string& email, const std::string& recoveryCode); // Declaration for sending email
-std::string getTrimmedInput(const std::string& prompt); // Reusable input function
 
 #endif
