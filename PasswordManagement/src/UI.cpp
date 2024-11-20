@@ -58,6 +58,10 @@ bool InitializeUI(HWND windowHandle) {
     ImGui_ImplWin32_Init(windowHandle);
     ImGui_ImplDX9_Init(d3dDevice);
 
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags = NULL; // Disable saved settings
+    io.IniFilename = nullptr; // Prevent imgui.ini from being created
+
     return true;
 }
 
