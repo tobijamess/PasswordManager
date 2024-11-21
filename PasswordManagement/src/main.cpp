@@ -18,8 +18,8 @@
 void AttachConsoleOutput() {
     AllocConsole();  // Allocate a new console
     FILE* consoleOutput;
-    freopen_s(&consoleOutput, "CONOUT$", "w", stdout);  // Redirect standard output to the console
-    freopen_s(&consoleOutput, "CONOUT$", "w", stderr);  // Redirect standard error to the console
+    freopen_s(&consoleOutput, "CONOUT$", "w", stdout); // Redirect standard output to the console
+    freopen_s(&consoleOutput, "CONOUT$", "w", stderr); // Redirect standard error to the console
 }
 
 // Declare function that is defined in separate .cpp to allow ImGui to process windows messages like user inputs from mouse and keyboard
