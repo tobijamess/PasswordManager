@@ -34,22 +34,30 @@ enum Scene {
 Scene currentScene = MAIN_MENU;
 PasswordManager pm("");
 
+
 bool InitializeUI(HWND windowHandle) {
+    // Initialize Direct3D 9 with the specified SDK version
     d3d = Direct3DCreate9(D3D_SDK_VERSION);
     if (!d3d) {
-        std::cerr << "Direct3D initialization failed." << std::endl;
-        return false;
+        std::cerr << "Direct3D initialization failed." << std::endl;   //Error message for failure at this step
+        return false; // Exit if Direct3D initialization fails
     }
-
+    // Set up the Direct3D presentation parameters
     D3DPRESENT_PARAMETERS d3dpp = {};
-    d3dpp.Windowed = TRUE;
-    d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
-    d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+    d3dpp.Windowed = TRUE;                        // Enable windowed mode               
+    d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;     // Discard old frames for efficiency
+    d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;      // Use the current display format
+    d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present frames as quickly as possible
 
-    if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, windowHandle,
-        D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3dDevice) < 0) {
-        std::cerr << "Direct3D device creation failed." << std::endl;
+    // Attempt to create the Direct3D device
+    if (d3d->CreateDevice(
+        D3DADAPTER_DEFAULT,                       // Use the primary graphics adapter
+        D3DDEVTYPE_HAL,                           // Use hardware acceleration for rendering
+        windowHandle,                             // Associate the device with the provided window handle
+        D3DCREATE_SOFTWARE_VERTEXPROCESSING,      // Perform vertex processing in software
+        &d3dpp, 
+        &d3dDevice) < 0) {       
+        std::cerr << "Direct3D device creation failed." << std::endl;        
         return false;
     }
 
