@@ -34,29 +34,36 @@ enum Scene {
 Scene currentScene = MAIN_MENU;
 PasswordManager pm("");
 
+// Initialize the Direct3D interface using the specified SDK version
 bool InitializeUI(HWND windowHandle) {
     d3d = Direct3DCreate9(D3D_SDK_VERSION);
     if (!d3d) {
-        std::cerr << "Direct3D initialization failed." << std::endl;
+        std::cerr << "Direct3D initialization failed." << std::endl;    // Log an error message and return false if Direct3D initialization fails
         return false;
     }
-
+   
+    // Define the Direct3D presentation parameters
     D3DPRESENT_PARAMETERS d3dpp = {};
-    d3dpp.Windowed = TRUE;
-    d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
-    d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-
-    if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, windowHandle,
-        D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3dDevice) < 0) {
-        std::cerr << "Direct3D device creation failed." << std::endl;
+    d3dpp.Windowed = TRUE;                                      // Enable windowed mode (not fullscreen)
+    d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;                   // Discard the contents of the back buffer after presenting
+    d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;                    // Use the current desktop display format for the back buffer
+    d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;         // Present frames as soon as possible, no V-Sync
+    
+    // Attempt to create the Direct3D device
+    if (d3d->CreateDevice(
+        D3DADAPTER_DEFAULT,                                     // Use the primary graphics adapter
+        D3DDEVTYPE_HAL, windowHandle,                           // Use hardware acceleration for rendering
+        D3DCREATE_SOFTWARE_VERTEXPROCESSING,                    // Associate the device with the provided window handle
+        &d3dpp,                                                 // Perform vertex processing in software
+        &d3dDevice) < 0) {
+        std::cerr << "Direct3D device creation failed." << std::endl; // Log an error message and return false if device creation fails
         return false;
     }
 
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGui_ImplWin32_Init(windowHandle);
-    ImGui_ImplDX9_Init(d3dDevice);
+    ImGui::CreateContext();                                         // Initialize the ImGui context
+    ImGui::StyleColorsDark();                                       // Set the default ImGui style to "Dark"
+    ImGui_ImplWin32_Init(windowHandle);                             // Initialize ImGui to handle input for a Win32 window
+    ImGui_ImplDX9_Init(d3dDevice);                                  // Initialize ImGui to render using the DirectX9 device
 
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags = NULL; // Disable saved settings
