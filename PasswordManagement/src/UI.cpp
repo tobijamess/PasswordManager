@@ -134,30 +134,38 @@ void ShowStatusMessage(const std::string& message) {
 }
 
 void RenderUI() {
-    CheckDeviceLost();
+    CheckDeviceLost();      // Check if the Direct3D device has been lost and attempt recovery if needed
 
+    // Clear the back buffer with a specific color (dark red in this case)
     d3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_XRGB(59, 47, 47), 1.0f, 0);
+    
+    // Start a new frame for ImGui with both DirectX9 and Win32 backends
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    // Retrieve ImGui input/output data, like display size
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 windowSize = io.DisplaySize;
 
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(windowSize);
-    ImGui::SetNextWindowBgAlpha(0.0f);
+    // Set up the main application window to fill the screen
+    ImGui::SetNextWindowPos(ImVec2(0, 0));   // Position at the top-left corner
+    ImGui::SetNextWindowSize(windowSize);    // Size matches the display size
+    ImGui::SetNextWindowBgAlpha(0.0f);       // Set window background to be fully transparent
 
+    // Begin the main application window
     ImGui::Begin("Password Manager", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
+    // Buffers to hold user input for various fields that are named appropriately
     static char usernameBuffer[64] = "";
     static char emailBuffer[64] = "";
     static char recoveryCodeBuffer[8] = "";
     static char masterPasswordBuffer[64] = "";
     static char confirmPasswordBuffer[64] = "";
-
-    static bool authenticated = false;
-    static User loggedInUser;
+    
+    // Application state variables
+    static bool authenticated = false; // Tracks if the user is authenticated
+    static User loggedInUser;          // Stores the currently logged-in user
 
     // Show status message if present
     if (!statusMessage.empty()) {
@@ -174,34 +182,42 @@ void RenderUI() {
     // Center buttons and input fields with relative sizes
     ImVec2 buttonSize(windowSize.x * 0.2f, windowSize.y * 0.05f);  // Buttons are 20% of width, 5% of height
 
+
+    // Handle different scenes or states of the application
     switch (currentScene) {
     case MAIN_MENU:
+        // Main menu options: Create Account and Log In
         ImGui::SetCursorPos(ImVec2((windowSize.x - buttonSize.x) / 2, windowSize.y * 0.2f));
         ImGui::Text("Welcome to the Password Manager!");
 
         ImGui::SetCursorPosX((windowSize.x - buttonSize.x) / 2);  // Center "Create Account" button
         if (ImGui::Button("Create Account", buttonSize)) {
-            currentScene = CREATE_ACCOUNT;
+            currentScene = CREATE_ACCOUNT; // Change creat account scene 
         }
         ImGui::SetCursorPosX((windowSize.x - buttonSize.x) / 2);  // Center "Log In" button
         if (ImGui::Button("Log In", buttonSize)) {
-            currentScene = LOGIN;
+            currentScene = LOGIN;           //switch to log in scene
         }
         break;
 
     case CREATE_ACCOUNT:
+        // Create account scene
         ImGui::Text("Create Account");
+
+        //Input fields
         CenteredInputField("Username", "##username", usernameBuffer, IM_ARRAYSIZE(usernameBuffer));
         CenteredInputField("Email", "##email", emailBuffer, IM_ARRAYSIZE(emailBuffer));
         CenteredInputField("Master Password", "##masterPassword", masterPasswordBuffer, IM_ARRAYSIZE(masterPasswordBuffer), true);
         CenteredInputField("Confirm Password", "##confirmPassword", confirmPasswordBuffer, IM_ARRAYSIZE(confirmPasswordBuffer), true);
-
+       
+        // Display and handle "Confirm" button
         ImGui::SetCursorPosX((windowSize.x - buttonSize.x) / 2);  // Center "Confirm" button
         if (ImGui::Button("Confirm", buttonSize)) {
             std::string username(usernameBuffer);
             std::string email(emailBuffer);
             std::string masterPassword(masterPasswordBuffer);
 
+            // Validation checks for account creation
             if (Database::fileExists(username)) {
                 ShowStatusMessage("This account already exists.");
             }
@@ -226,10 +242,14 @@ void RenderUI() {
         break;
 
     case LOGIN:
+        // Login scene
         ImGui::Text("Log In");
+
+        //Input fields
         CenteredInputField("Username", "##username", usernameBuffer, IM_ARRAYSIZE(usernameBuffer));
         CenteredInputField("Master Password", "##masterPassword", masterPasswordBuffer, IM_ARRAYSIZE(masterPasswordBuffer), true);
 
+        // Display and handle "Login" button
         ImGui::SetCursorPosX((windowSize.x - buttonSize.x) / 2);  // Center "Login" button
         if (ImGui::Button("Login", buttonSize)) {
             std::string username(usernameBuffer);
@@ -247,6 +267,7 @@ void RenderUI() {
             }
             break;
         }
+        // Display "Forgot Password" and "Back" buttons
         ImGui::SetCursorPosX((windowSize.x - buttonSize.x) / 2);  // Center "Forgot Password" button
         if (ImGui::Button("Forgot Password", buttonSize)) {
             currentScene = FORGOT_PASSWORD; 
@@ -433,7 +454,7 @@ void RenderUI() {
     d3dDevice->EndScene();
     d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
-
+//Clean up function
 void CleanupUI() {
     ImGui_ImplDX9_Shutdown();
     ImGui_ImplWin32_Shutdown();
